@@ -1,13 +1,20 @@
-# vsd_nascom_socdesign
-## Contents
+# NASSCOM-VSD-PHYSICAL-DESIGN-SOC-DESIGN-PROGRAM
 
-##  Day - 1 Introduction of Open-Source EDA, OpenLane and Sky130 PDK
+## Table of Contents
+- [Day - 1 Introduction of Open-Source EDA, OpenLane and Sky130 PDK](#day---1-Introduction-of-Open-Source-EDA-OpenLane-and-Sky130-PDK)
+- [Day - 2 Good floorplaning vs Bad floorplaning and introduction to library cells](#day---2-Good-floorplaning-vs-Bad-floorplaning-and-introduction-to-library-cells)
+
+### Overview Of QFN-48 Chip (PicoRV32 - A Size-Optimized RISC-V CPU)
+VSD Squadron Board: The VSD Board is shown below. Our focus is on the enclosed region containing the "Microprocessor (PicoRV32A-Cpu)," which will be designed using the RTL to GDS flow, progressing from the abstract design level to the fabrication stage.
+
+![image](https://github.com/user-attachments/assets/844ea7fc-f4f4-4353-ae5d-d75a4507d075)
 
 
-## Openlane
-OpenLane is an open-source, fully-automated RTL-to-GDSII flow for ASIC design. It provides a comprehensive platform for converting digital circuit designs (typically described in RTL—Register Transfer Level) into a final layout that can be fabricated on silicon
+## Day - 1 Introduction of Open-Source EDA, OpenLane and Sky130 PDK
 
-OpenLane integrates various open-source tools and scripts to handle different stages of the ASIC design flow. 
+
+### OPENLANE 
+
 
 #### Key Features of OpenLane:
 1. **RTL to GDSII Flow:**- OpenLane provides a flow that takes RTL as input and produces GDSII (Graphic Design System II), which is the standard file format for the final layout of the chip.
@@ -121,9 +128,13 @@ First, ensure that OpenLane is properly installed and that you have the necessar
   ``` bash
   run_magic
   ````
-- This step involves running DRC (Design Rule Check), LVS (Layout vs. Schematic), and generating the final layout.
+- This step involves running DRC (Design Rule Check), LVS (Layout vs. Schematic), and generating the final layout
+
   
-![Screenshot from 2024-08-22 17-41-01](https://github.com/user-attachments/assets/bbdc48bc-b228-4819-9db6-d7feaa73d3b9)
+- ![image](https://github.com/user-attachments/assets/80a9cb83-590f-49d1-8735-e83baba69f6d)
+
+  
+
 
 To run in interactive mode 
  command will be 
@@ -142,10 +153,12 @@ command for synthesis
 ```bash
  % run_synthesis 
 ```
+![image](https://github.com/user-attachments/assets/646b74cb-2b89-4326-a949-09583601e8b1)
 
-![Screenshot from 2024-08-22 18-43-04](https://github.com/user-attachments/assets/3bb4b134-afdc-42f3-97bc-4bee082626d2)
+ 
 
-![Screenshot from 2024-08-22 18-43-17](https://github.com/user-attachments/assets/2c3ca1da-b5b9-4837-800e-2b750ac17aa7)
+![image](https://github.com/user-attachments/assets/1ec8faeb-1b46-4ae1-ae4a-f7fefec8a87c)
+
 ###### D Flip-Flop Ratio
 Now we will find the flip flop ratio
 ```bash
@@ -154,6 +167,151 @@ flop ratio =(total no. of d flop realised) / (total no. cells)
            = 0.10842
 ```
 
+# Day - 2 Good floorplaning vs Bad floorplaning and introduction to library cells
 
-![Screenshot from 2024-08-22 18-13-40](https://github.com/user-attachments/assets/a6be1ca5-842b-4431-a771-784ba144fc95)
-  
+## Utilization Factor and Aspect Ratio of a die----
+
+**Utilization Factor**
+--Utilization Factor is a quantity based on which we can say how efficiently we used a core area of chip or die by the memory components or any other logic block.
+--It's the ratio between total area occupied by the netlist and total area of the core. 
+````bash
+*Utilization Factor* == Area occcupied by the netlist/Total area of the core
+````
+
+**Aspect Ratio**
+--Aspect Ratio   of a chip or die refers to the ratio of its width to its height.
+aspect ratio:
+````bash
+          A.r = width/height
+
+````
+
+
+
+The aspect ratio affects the chip's mechanical stability, ease of packaging, and manufacturability. Ideally, the aspect ratio should be close to 1 (i.e., the chip is nearly square), as this minimizes stress and simplifies the packaging process. However, depending on the application and design constraints, the aspect ratio may vary.
+
+![Screenshot 2024-09-25 153217](https://github.com/user-attachments/assets/bf1f58dd-c22e-4265-a22e-c4c1a45bb4da)
+
+
+
+![image](https://github.com/user-attachments/assets/0a83855f-d17a-4b7a-9480-9f1f482a8bc6)
+
+
+**Run Floorplan**
+````bash
+run_floorplan
+````
+![image](https://github.com/user-attachments/assets/69c45911-8da4-4a25-9386-e119972763b0)
+![image](https://github.com/user-attachments/assets/a096e81f-9ef0-4616-b453-56faa505724f)
+
+**Picorv32a Floorplan default values**
+![image](https://github.com/user-attachments/assets/ab72baf5-c3a6-495e-897a-ed64299b7e54)
+
+![Screenshot 2024-09-25 174521](https://github.com/user-attachments/assets/afee2bfb-a8de-4979-857e-f0b7311cf317)
+
+**magic tool tech file and the layout of design:**
+
+
+![Screenshot 2024-09-25 180429](https://github.com/user-attachments/assets/3a1572ac-8ca1-4e97-8121-003fc609b933)
+
+**Centering the Design:**
+
+Press ``` S ``` to select the entire design.
+
+Press ``` V ``` to vertically align it to the middle of the screen.
+
+**Zooming In on a Specific Area:**
+
+Left-click and drag to select the desired region.
+
+Right-click to bring up the context menu.
+
+Press``` Z ``` to zoom in on the selected area.
+
+
+**Getting Details of a Cell:**
+
+Move your cursor to the cell of interest.
+
+Press ``` S ``` to select the cell.
+
+In the tkcon window, enter the command "what" to display cell details.
+
+## Placement in VLSI Design
+Placement plays a crucial role in VLSI (Very Large Scale Integration) design. It involves determining the physical locations of standard cells or logic elements within a chip or block. Let's break it down:
+
+- **Global Placement:**
+
+  - Global placement assigns general locations to movable objects (cells).
+  - Some overlaps between placed objects are allowed during this stage. 
+  - The goal is to achieve a rough layout that satisfies area constraints.
+
+- **Detailed Placement:**
+
+  - Detailed placement refines the object locations obtained from global placement.
+  - It enforces non-overlapping constraints and ensures that cells are placed on legal cell sites.
+  - The quality of detailed placement significantly impacts subsequent routing stages.
+
+``` magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def & ```
+
+
+
+![Screenshot 2024-09-25 230658](https://github.com/user-attachments/assets/d5ca9ce5-6360-4f93-9544-495b7068fc0d)
+
+
+## CELL DESIGN AND CHARACETRIZATION FLOWS
+
+Library is a place where we get information about every cell. It has differents cells with different size, functionality,threshold voltages. There is a typical cell design flow steps.
+
+    Inputs : PDKS(process design kit) : DRC & LVS, SPICE Models, library & user-defined specs.
+    Design Steps :Circuit design, Layout design (Art of layout Euler's path and stick diagram), Extraction of parasitics, Characterization (timing, noise, power).
+    Outputs: CDL (circuit description language), LEF, GDSII, extracted SPICE netlist (.cir), timing, noise and power .lib files
+## Standard Cell Characterization Flow
+A typical standard cell characterization flow that is followed in the industry includes the following steps:
+
+- Read in the models and tech files
+- Read extracted spice Netlist
+- Recognise behavior of the cells
+- Read the subcircuits
+- Attach power sources
+- Apply stimulus to characterization setup
+- Provide neccesary output capacitance loads
+- Provide neccesary simulation commands
+Now all these 8 steps are fed in together as a configuration file to a characterization software called GUNA. This software generates timing, noise, power models. These .libs are classified as Timing 
+ characterization, power characterization and noise characterization.
+
+
+
+
+
+| Timing defintion   | value| 
+|----------|----------|
+| `slew_low_rise_thr`|`20% value`|
+|`slew_high_rise_thr`| `80% value`   |
+| `slew_low_fall_thr`| `20% value`   |
+|`slew_high_fall_thr`| `80% value`   |
+| `in_rise_thr`      | `50% value`   |
+| `in_fall_thr`      | `50% value`   |
+| `out_rise_thr`     | `50% value`   |
+| `out_fall_thr`     | `50% value`   |
+
+
+
+## Propagation Delay and Transition Time
+**Propagation delay** is the time it takes for a signal to travel from the input to the output of a circuit. It's typically measured as the time difference between when the input signal reaches 50% of its final value and when the output signal reaches 50% of its final value.
+
+If the threshold values used to measure this delay are not chosen carefully, it can result in negative delay values, which are not physically meaningful. However, even with well-chosen thresholds, the delay might still appear positive or negative due to variations in the slew rate, which is how quickly the signal transitions from one value to another.
+
+
+``` bash
+Propagation delay = time(out_thr) - time(in_thr)
+```
+
+**Transition Time**
+Transition time is the time it takes for a signal to move between its low and high states (or vice versa). It’s typically measured between the points where the signal reaches 10% and 90% of its final value, or sometimes between 20% and 80%. This metric is crucial for understanding the speed of signal changes in a circuit.
+
+
+``` bash
+Rise transition time = time(slew_high_rise_thr) - time (slew_low_rise_thr)
+
+Low transition time = time(slew_high_fall_thr) - time (slew_low_fall_thr)
