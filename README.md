@@ -3,6 +3,7 @@
 ## Table of Contents
 - [Day - 1 Introduction of Open-Source EDA, OpenLane and Sky130 PDK](#day---1-Introduction-of-Open-Source-EDA-OpenLane-and-Sky130-PDK)
 - [Day - 2 Good floorplaning vs Bad floorplaning and introduction to library cells](#day---2-Good-floorplaning-vs-Bad-floorplaning-and-introduction-to-library-cells)
+-  [Day -3 Design Library Cell using magic layout and ngspice charcterization](#Day--3-Design-Library-Cell-using-magic-layout-and-ngspice-charcterization)
 
 ### Overview Of QFN-48 Chip (PicoRV32 - A Size-Optimized RISC-V CPU)
 VSD Squadron Board: The VSD Board is shown below. Our focus is on the enclosed region containing the "Microprocessor (PicoRV32A-Cpu)," which will be designed using the RTL to GDS flow, progressing from the abstract design level to the fabrication stage.
@@ -497,18 +498,29 @@ The CMOS (Complementary Metal-Oxide-Semiconductor) fabrication process is a comp
 
 #### 2. Inverter layout in Magic tool
 
+![image](https://github.com/user-attachments/assets/760da63c-b374-4029-ada7-90b99297d174)
+
+![image](https://github.com/user-attachments/assets/4fe2e412-8fc6-4cf5-828b-24583e633cc0)
+
+![image](https://github.com/user-attachments/assets/30a90bb4-740a-483d-b0c9-9398be004bda)
+
+
+
 
 
 #### 3. Extraction to spice format
+
+![image](https://github.com/user-attachments/assets/c87a83fa-e97e-449a-ba95-7bea1cdbe00d)
+
+![image](https://github.com/user-attachments/assets/cfc868ff-d496-4114-a1fe-3ab05e9b5e37)
 
 
 
 #### 4. spice tecgnology file, simulation and output graph
 
+![image](https://github.com/user-attachments/assets/68c0d3eb-ea99-4db3-8cd8-923bccfff58f)
 
-
-updated tech file:
-
+![image](https://github.com/user-attachments/assets/0693d6ef-1fca-481d-9c5b-3aa95be224be)
 
 
 
