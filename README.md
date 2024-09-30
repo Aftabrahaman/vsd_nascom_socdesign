@@ -316,7 +316,7 @@ Transition time is the time it takes for a signal to move between its low and hi
 Rise transition time = time(slew_high_rise_thr) - time (slew_low_rise_thr)
 
 Low transition time = time(slew_high_fall_thr) - time (slew_low_fall_thr)
-
+ ```
 
 # Day -3 Design Library Cell using magic layout and ngspice charcterization
 
