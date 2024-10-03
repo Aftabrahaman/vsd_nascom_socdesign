@@ -4,6 +4,8 @@
 - [Day - 1 Introduction of Open-Source EDA, OpenLane and Sky130 PDK](#day---1-Introduction-of-Open-Source-EDA-OpenLane-and-Sky130-PDK)
 - [Day - 2 Good floorplaning vs Bad floorplaning and introduction to library cells](#day---2-Good-floorplaning-vs-Bad-floorplaning-and-introduction-to-library-cells)
 -  [Day -3 Design Library Cell using magic layout and ngspice charcterization](#Day--3-Design-Library-Cell-using-magic-layout-and-ngspice-charcterization)
+- [DAY -4 Pre Lay-out Timing Analysis and Importance of Good clock Tree](#Day--4-Pre-Lay-out-Timing-Analysis-and-Importance-of-Good-clock-Tree)
+- [DAY -5 Final Steps for RTL2GDS Using TritonROUTE and openSTA](#Day--5-Final-Steps-for-RTL2GDS-Using-TritonROUTE-and-openSTA)
 
 ### Overview Of QFN-48 Chip (PicoRV32 - A Size-Optimized RISC-V CPU)
 VSD Squadron Board: The VSD Board is shown below. Our focus is on the enclosed region containing the "Microprocessor (PicoRV32A-Cpu)," which will be designed using the RTL to GDS flow, progressing from the abstract design level to the fabrication stage.
@@ -555,4 +557,488 @@ fall_transition = (20% of 3.3v) - (80% of 3.3v)
 
 
    ##### 6. Introduction to Magic tool and DRC
+
+
+
+
+   ## DAY -4 Pre Lay-out Timing Analysis and Importance of Good clock Tree
+
+### CONTENTS
+
+- [1-Delay Table](#1-delay-table)
+- [2-Setup time and Hold time of Flop](#2-setup-time-and-hold-time-of-flop)
+- [3-Clock tree routing and buffering](#3-clock-tree-routing-and-buffering)
+- [4-LABs Steps](#4-labs-steps)
+
+
+
+
+### 1-Delay Table
+
+In physical design, a delay table is a data structure used to model the delay characteristics of standard cells or interconnects in a digital circuit.
+
+#### Purpose
+**Estimate Delays:**  Delay tables help in estimating the propagation delay through gates or along wires, which is crucial for timing analysis.
+
+#### Delay Values  
+The actual propagation delays, typically provided for different combinations of input slew and output load.
+
+#### Usage
+**Static Timing Analysis (STA):** Delay tables feed information into STA tools to evaluate the timing performance of a design.
+
+**Cell Libraries:** Standard cell libraries include delay tables for each cell type, allowing EDA tools to accurately model and simulate circuit behavior.
+#### Types
+**Linear Delay Models:** Simplified models that use linear equations.
+
+**Non-linear Delay Models:** More complex and accurate, capturing variations due to non-linear effects.
+#### Importance
+Accuracy: Provides accurate timing information, crucial for ensuring that the design meets its timing constraints.
+
+Optimization: Helps in identifying critical paths and optimizing them to improve performance.
+
+![Screenshot from 2024-09-03 19-46-27](https://github.com/user-attachments/assets/3accdf7b-aa36-4e30-91b4-a7f8ad3b2006)
+
+
+
+### 2-Setup time and Hold time of Flop
+
+#### Set Up Time Analysis
+Setup time is the minimum time period before the clock edge during which the data input must be stable.
+
+#### Purpose:
+Ensures that the data is correctly sampled by the flip-flop on the active clock edge.
+
+#### Analysis Steps:
+Identify Critical Paths: Trace the longest path from one flip-flop to the next, including combinational logic.
+
+**Calculate Data Path Delay**: Sum up the delays of all elements (gates, interconnects) in the data path.
+
+**Compare with Setup Time:** Ensure that the data path delay plus setup time is less than the clock period.
+
+Data Path Delay + Setup Time < Clock Period
+
+Adjust if Necessary: If the condition isn’t met, optimize the design by reducing delays, increasing clock period, or modifying the path.
+
+#### Hold Time Analysis
+Hold time is the minimum time period after the clock edge during which the data input must remain stable.
+
+#### Purpose:
+Prevents the new data from being captured too early, ensuring the current data is held long enough.
+
+#### Analysis Steps:
+**Identify Critical Paths:** Examine paths where new data might overwrite current data too soon.
+
+**Calculate Data Path Delay:** Consider the minimum delay from the clock edge to the data input.
+
+**Compare with Hold Time:** Ensure that the data path delay is greater than the hold time.
+
+Data Path Delay>Hold Time
+
+**Adjust if Necessary:** If the condition isn’t met, add buffers or delay elements to increase path delay.
+
+#### Importance
+**Setup Time Violations:** Can lead to incorrect data being captured, causing functional errors.
+
+**Hold Time Violations:** Can result in data corruption as new data overwrites old data prematurely.
+
+![Screenshot from 2024-09-03 21-43-49](https://github.com/user-attachments/assets/f0228524-7072-4822-87b6-0aaff1b40980)
+
+
+
+
+### 3-Clock tree routing and buffering
+
+Clock tree routing and buffering are crucial steps in the physical design phase of integrated circuit (IC) design. These steps ensure that the clock signal is distributed efficiently and uniformly across the entire chip to all sequential elements (like flip-flops) with minimal skew and latency.
+
+#### a. Clock Tree Synthesis (CTS):
+**Purpose:** The goal of clock tree synthesis is to distribute the clock signal from a single clock source (usually a Phase-Locked Loop (PLL) or a clock generator) to all the sequential elements in the design (like flip-flops) with minimal skew and balanced delays.
+
+#### Challenges:
+**Clock Skew:** The difference in arrival times of the clock signal at different sequential elements. Skew can lead to timing violations, so minimizing it is a primary goal.
+
+**Clock Latency:** The delay from the clock source to a flip-flop or other sequential element. Latency needs to be controlled to meet timing requirements.
+
+#### Power Consumption: 
+
+Clock networks are often the most power-consuming part of the chip. Optimizing for lower power while maintaining performance is crucial.
+
+#### b. Clock Tree Routing:
+
+**Tree Structure:** The clock distribution network is usually constructed as a tree (hence the name "clock tree"). This tree structure helps in balancing the delays and skew.
+
+#### Clock Tree Topologies:
+- H-Tree: A hierarchical tree structure that is symmetric and balanced, often used in regular grid layouts.
+
+- X-Tree, Y-Tree: Variations of the H-tree, used based on specific design needs.
+
+- Spine: A clock distribution method where the clock is routed along a central "spine" and branches out to different regions. This is common in large, hierarchical designs.
+
+**Routing Techniques:**
+- Minimal Skew Routing: Ensuring that all paths from the clock source to the clock sinks (sequential elements) are balanced to minimize skew.
+- Buffered Clock Tree: Inserting buffers along the clock tree to manage delay and drive strength, ensuring that the clock signal reaches all parts of the circuit with sufficient strength and minimal degradation.
+
+#### c. Clock Tree Buffering:
+**Why Buffers are Needed:**
+- Load Management: The clock signal needs to drive a large number of flip-flops and other clocked elements. Buffers are used to amplify the clock signal and drive these loads effectively.
+- Delay Control: Buffers help in balancing the delay in different paths of the clock tree, which is crucial for minimizing skew.
+- Noise Reduction: By buffering the clock signal, noise introduced by long interconnects can be reduced.
+
+**Types of Buffers:**
+- Inverters: Simple buffers that invert the signal. Sometimes used in pairs to maintain the same logic level while buffering.
+- Dedicated Clock Buffers: Specially designed buffers that are optimized for driving the clock signal with high fan-out and minimal jitter.
+- Buffer Insertion: Buffers are strategically inserted at points in the clock tree where the clock signal needs to be amplified or where delay needs to be controlled.
+The placement of these buffers is determined during the Clock Tree Synthesis process using EDA tools, which optimize for delay, skew, and power consumption.
+
+#### d. Skew and Latency Management:
+- Zero-Skew Clock Tree: An ideal clock tree would have zero skew, meaning all flip-flops receive the clock signal at the exact same time. While practically impossible, the goal is to minimize skew as much as possible.
+- Useful Skew: Sometimes, intentional skew is introduced to improve timing in certain paths. This is known as useful skew and can help in meeting setup and hold time constraints.
+Clock Latency: Clock tree buffering and routing also ensure that the clock signal arrives at the flip-flops with the desired latency, which is crucial for timing closure.
+
+#### e. Post-CTS Optimization:
+After the clock tree is synthesized, further optimization steps like Clock Tree Optimization (CTO) and Post-CTS Optimization might be performed to fine-tune the clock network, ensuring that all timing requirements are met.
+- Timing Analysis: Tools perform static timing analysis (STA) to verify that the clock tree meets the required timing constraints, and any violations are corrected by adjusting the clock tree design.
+
+![Screenshot from 2024-09-03 22-05-22](https://github.com/user-attachments/assets/3592f0f9-aa1b-4356-878a-5bb2c7cdaa2f)
+
+![Screenshot from 2024-09-03 22-05-45](https://github.com/user-attachments/assets/685395e4-8914-46e9-b331-f2ab999e09d5)
+
+
+### 4-LABs Steps:
+
+tracks.info 
+![Screenshot from 2024-09-01 15-25-09](https://github.com/user-attachments/assets/3a412cc9-1e37-40b5-bec7-4e8fed3a55b3)
+
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-01%2003-32-05.png![image](https://github.com/user-attachments/assets/fb2fabb5-99dc-49e1-b091-f3fd1b2a5119)
+
+
+
+
+Inverter_mag
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-01%2003-35-25.png![image](https://github.com/user-attachments/assets/3d8e8e85-3f5e-4e94-9ba2-322a35046a32)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-01%2003-39-04.png![image](https://github.com/user-attachments/assets/1e9c3ea6-e3b3-453f-a49e-8fe30b62ec70)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-01%2003-40-12.png![image](https://github.com/user-attachments/assets/68fb0c94-a3a1-40a1-a50d-b0ddf22add69)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-01%2003-43-10.png![image](https://github.com/user-attachments/assets/a8f36898-5c33-4e5d-8fac-86f5660458de)
+
+
+
+
+
+copying the inverter lef to my design/src
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-01%2003-51-15.png![image](https://github.com/user-attachments/assets/84c9703b-4030-4ac1-bd6e-a204fb397c72)
+
+
+
+**lib file**
+
+
+**config.tcl**
+
+
+**run_synthesis**
+
+
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-02%2019-54-48.png![image](https://github.com/user-attachments/assets/a228657f-86d8-499f-b3c9-09d7a2323335)
+
+
+**run_floorplan**
+```
+run init_floorplan
+
+run place_io
+
+tap_decap_or
+```
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-02%2020-09-16.png![image](https://github.com/user-attachments/assets/f17891cd-645a-4cde-9d88-e9eb51b3186a)
+
+!
+
+
+
+**run_placement**
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-02%2020-13-17.png![image](https://github.com/user-attachments/assets/fcd89403-a734-4665-986f-500519982bc6)
+
+
+
+**lay-out**
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-03%2001-05-14.png![image](https://github.com/user-attachments/assets/b6213cd6-1a0a-448b-b70c-6b3dc6e79473)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-03%2001-11-39.png![image](https://github.com/user-attachments/assets/391f0c4e-0768-4c21-9284-6d427041f379)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-03%2001-12-18.png![image](https://github.com/user-attachments/assets/fe48f177-67d2-428b-9a1c-193b3e6e6567)
+
+
+**my_base.sdc**
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-03%2006-15-41.png![image](https://github.com/user-attachments/assets/e2f30bfd-194f-4fad-a21f-922a3dc0fb42)
+
+
+**sta.conf**
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-03%2006-18-25.png![image](https://github.com/user-attachments/assets/36157603-c8a2-437c-8042-98a2e9d8ea43)
+
+
+**openroad**
+
+
+**CTS run**
+
+
+
+
+
+
+## DAY -5 Final Steps for RTL2GDS Using TritonROUTE and openSTA
+
+### CONTENTS
+
+- [1-Routing and DRC](#1-routing-and-drc)
+- [2-Global routing and Detailed routing](#2-global-routing-and-detailed-routing)
+- [3-Maze routing and Steiner tree algorithm](#3-maze-routing-and-steiner-tree-algorithm)
+- [4-Power distribution and network routing](#4-power-distribution-and-network-routing)
+- [5-TritonRoute features](#5-tritonroute-features)
+- [6-Labs practise](#6-labs-practise)
+
+
+
+### 1-Routing and DRC
+Routing and Design Rule Check (DRC) are key steps in the physical design process of integrated circuits (ICs). They play crucial roles in ensuring that the design is manufacturable and meets all the required electrical and physical constraints.
+
+#### a. Routing:
+Routing is the process of connecting the various components (standard cells, macros, IOs, etc.) in an IC design with metal interconnects according to the netlist generated during the synthesis stage.
+
+#### Key Aspects of Routing:
+**Global Routing:**
+
+- Purpose: Provides an abstract, coarse-grained plan of how the connections will be made across different regions of the chip. It divides the chip area into a grid and assigns paths to nets without detailed geometry.
+- Outcome: Guides the detailed routing stage by giving an overall connectivity layout.
+
+  
+**Detailed Routing:**
+
+- Purpose: Converts the global routing plan into actual geometrical paths on the metal layers of the chip.
+- Metal Layers: The routing is done using different metal layers, with lower layers typically used for local connections and higher layers for long-distance or global connections.
+
+#### Routing Algorithms:
+
+Maze Routing: Finds the shortest path between two points, avoiding obstacles.
+Channel Routing: Manages routing in channels between rows of cells.
+Grid-Based Routing: Uses a grid to guide the routing paths and ensure that they follow design rules.
+
+**Routing Challenges:**
+
+Congestion: Too many wires trying to pass through the same area can lead to congestion, which can cause timing issues or even make routing impossible.
+Crosstalk: Signals on adjacent wires can interfere with each other, leading to noise and potential errors.
+Delay: Longer or more resistive paths can introduce delays that affect the timing of the circuit.
+
+**Routing Constraints:**
+
+Timing Constraints: Ensuring that the routed paths meet the required timing (setup and hold times).
+
+**Power Constraints:** Minimizing power consumption and ensuring that power distribution is balanced.
+
+**Signal Integrity:** Maintaining signal quality by minimizing noise, crosstalk, and other electrical issues.
+
+#### b. Design Rule Check (DRC):
+Design Rule Check (DRC) is a verification step in the physical design process that ensures the layout of the chip adheres to a set of predefined rules provided by the semiconductor foundry. These rules are necessary to guarantee that the design can be manufactured reliably.
+
+#### Key Aspects of DRC:
+
+ **Design Rules:**
+
+ - Spacing Rules: Minimum distances between different metal layers, vias, or other features to avoid shorts and ensure manufacturability.
+ - Width Rules: Minimum and maximum width of wires to ensure that they can be manufactured correctly and carry the required current without issues.
+ - Enclosure Rules: Requirements for how different layers must overlap or enclose each other (e.g., metal layers and vias).
+ - Alignment Rules: Ensure that different layers align correctly to avoid misalignment during manufacturing.
+
+**DRC Tools:**
+
+Tools like Calibre, Mentor Graphics, or Cadence's Assura are commonly used to run DRC checks. These tools take the physical layout as input and verify it against the foundry's design rules.
+
+**Common DRC Violations:**
+
+- Shorts: When two wires or components that should not be connected are too close or overlap.
+  
+- Opens: Missing connections due to routing errors or insufficient overlap of layers.
+  
+- Minimum Width Violations: Wires or features that are too narrow and might not be reliably manufactured.
+  
+- Spacing Violations: Features that are too close together, which can cause shorts or manufacturing issues.
+ 
+
+**DRC Correction:**
+
+After running a DRC, any violations are flagged, and the design must be corrected. This may involve adjusting the layout, rerouting wires, or modifying cell placement.
+
+![Screenshot from 2024-09-04 00-25-49](https://github.com/user-attachments/assets/de745192-63fb-4d8e-81cc-4091f6333ff6)
+![Screenshot from 2024-09-04 00-26-08](https://github.com/user-attachments/assets/9b3dd792-b4b0-4183-943d-ea7bd653bcb2)
+
+
+
+### 2-Global routing and Detailed routing
+
+#### a. Global Routing:
+
+**Purpose:**  Provides a high-level, coarse plan for connecting different regions of the chip. It divides the chip into grids and assigns general paths for connections without specifying exact wire routes.
+
+**Outcome:** Guides the detailed routing stage by outlining broad paths for signals to follow, helping to manage congestion and ensure that connections can be made.
+
+#### b. Detailed Routing:
+
+**Purpose:** Converts the global routing plan into precise, geometric wire routes on specific metal layers, connecting all components according to the design's netlist.
+
+**Outcome:**  Finalizes the exact paths for each wire, ensuring they meet design rules (like spacing and width), and resolves any conflicts or congestion identified during global routing.
+
+![Screenshot from 2024-09-04 01-01-55](https://github.com/user-attachments/assets/60b5b7d6-ed70-4ab7-8ffc-c50d98ec4ba1)
+
+
+### 3-Maze routing and Steiner tree algorithm
+
+#### a. Maze Routing:
+
+- Purpose: Maze routing is an algorithm used to find a path between two points (e.g., from a source to a destination pin) in a grid while avoiding obstacles.
+
+**How It Works:**
+
+The grid is treated as a matrix, where each cell represents a possible location for the wire. Obstacles like other wires, cells, or blocked areas are marked as unavailable.
+The algorithm explores all possible paths from the source to the destination, usually using a breadth-first search (BFS) approach.
+It expands from the source node by checking neighboring cells until it reaches the destination.
+The shortest path found through this exploration is chosen as the route.
+- Pros:
+
+Optimal Path: Guarantees finding the shortest path if one exists.
+Flexibility: Can handle complex obstacles and multiple routing layers.
+- Cons:
+
+Computationally Expensive: Can be slow and resource-intensive, especially for large designs.
+Not Always Practical for Large Grids: The algorithm can become infeasible for very large or densely populated grids due to its exhaustive nature.
+
+#### b. Steiner Tree Algorithm:
+
+**Purpose:** The Steiner tree algorithm is used to connect multiple points (e.g., multiple pins that need to be connected by a single net) with the shortest possible interconnect length, minimizing the total wire length.
+
+**How It Works:**
+
+The algorithm starts by creating a minimal spanning tree (MST) that connects all the target points (e.g., pins).
+Steiner points, which are additional points not originally in the set of target points, are introduced to reduce the overall wire length. These points act as intermediate nodes that help in minimizing the total connection length.
+The resulting structure is a Steiner tree, which is a tree that connects all target points (and possibly additional Steiner points) with the minimal total interconnect length.
+
+- Pros:
+
+Minimized Wire Length: Produces a routing solution with minimal total wire length, which is beneficial for reducing delay and power consumption.
+Efficient for Multi-Terminal Nets: Particularly useful for nets that need to connect more than two pins.
+
+- Cons:
+  
+Complexity: Finding the exact Steiner tree is an NP-hard problem, meaning it can be computationally expensive for large nets.
+Approximation: Often, heuristic or approximate methods are used to find a near-optimal Steiner tree, which might not be the absolute minimum.
+
+![Screenshot from 2024-09-04 00-45-15](https://github.com/user-attachments/assets/f10eb3e1-abcd-49d3-8ef7-f201b5c945ba)
+![Screenshot from 2024-09-04 00-45-34](https://github.com/user-attachments/assets/e14c7003-6fda-431b-8e08-100263c39ef2)
+![Screenshot from 2024-09-04 00-45-49](https://github.com/user-attachments/assets/e8755cd7-549d-4899-9d29-79c55d5f5031)
+
+
+
+### 4-Power distribution and network routing
+
+**Power Distribution:**
+Power distribution in IC design refers to the process of delivering power from the external power sources (like power pads or pins) to every component within the chip, including logic gates, flip-flops, memory cells, and other circuits.
+
+##### Key Concepts:
+
+**Power and Ground Rails:**
+These are the main conductors that distribute power (VDD) and ground (VSS) across the chip. They are typically implemented as wide metal lines running across the chip to minimize resistance and voltage drop.
+
+##### Power Grids:
+A power grid is a network of horizontal and vertical metal lines that form a mesh-like structure across the chip. This grid ensures that power is distributed uniformly to all areas of the chip.
+- VDD Grid: Carries the supply voltage.
+  
+- VSS Grid: Carries the ground potential.
+
+##### Power Rings:
+Rings of metal lines surrounding certain regions or blocks on the chip, providing a stable supply of power and grounding. They help in minimizing noise and ensuring a reliable power supply.
+
+##### Power Straps:
+Wider metal lines or groups of parallel lines that provide robust connections between the power grid and the power sources. These straps help reduce resistance and voltage drop.
+
+##### Decoupling Capacitors:
+Capacitors placed close to the power pins of circuits to stabilize the power supply by filtering out noise and compensating for sudden changes in current demand.
+
+#### b. Power Network Routing:
+Power network routing involves the detailed placement and routing of the power distribution network (PDN) on the chip, ensuring that all blocks and standard cells receive adequate power.
+
+##### Steps in Power Network Routing:
+
+**Placement of Power Pads:**
+Power pads (VDD, VSS) are placed around the periphery of the chip or in specific locations within the chip. These pads connect the internal power network to the external power supply.
+
+**Creation of Power Grid:**
+A grid of metal layers is laid out across the chip to distribute the power. The grid usually spans multiple metal layers, with the lower layers used for local distribution and the upper layers for global distribution.
+
+**Power Rings and Straps:**
+
+Power rings are placed around the periphery of major blocks (e.g., memory blocks, large logic blocks) to ensure a stable power supply.
+Power straps are used to connect the power rings and the power grid, ensuring that current can flow efficiently from the power pads to all parts of the chip.
+
+**Via Placement:**
+
+Vias are used to connect different metal layers within the power grid. Multiple vias are often placed in parallel to reduce resistance and ensure reliable current flow.
+
+**IR Drop Analysis:**
+
+After routing the power network, an IR drop analysis is performed to ensure that the voltage drop across the power grid is within acceptable limits. Excessive IR drop can cause circuits to malfunction due to insufficient voltage levels.
+
+**Electromigration Check:**
+
+Electromigration refers to the gradual movement of metal atoms in the power grid due to high current densities, which can lead to failures. The power network is checked to ensure that the current density in all metal lines is below the safe limits to avoid electromigration.
+
+**Noise and Decoupling:**
+
+The power network is designed to minimize noise (e.g., ground bounce) by carefully placing decoupling capacitors and ensuring that the grid structure is robust.
+
+![Screenshot from 2024-09-04 00-59-03](https://github.com/user-attachments/assets/cdbff524-e23c-4c85-9162-34b2e208ce8d)
+
+
+
+
+### 5-TritonRoute features
+
+TritonRoute is an open-source detailed routing tool used in the physical design of integrated circuits (ICs). It is a critical component of the Triton suite of EDA (Electronic Design Automation) tools. TritonRoute is specifically designed for the detailed routing stage of VLSI (Very Large Scale Integration) design.
+
+#### Key Features of TritonRoute:
+
+**Detailed Routing:**
+
+TritonRoute performs the detailed routing step in the IC design flow, where it converts global routing paths into exact geometrical wire routes on the metal layers of the chip.
+It handles the connection of signal nets, power nets, and clock nets, ensuring that all routing adheres to design rules.
+
+**Design Rule Checking (DRC):**
+
+TritonRoute incorporates design rule checking within its routing algorithms to ensure that all routed wires comply with the foundry's design rules, such as spacing, width, and via requirements.
+The tool is capable of resolving DRC violations that may arise during routing.
+
+**Open-Source and Integration:**
+
+TritonRoute is open-source, which means it can be freely used, modified, and integrated into custom EDA flows.
+It is part of the broader OpenROAD project, which aims to provide a fully autonomous, open-source RTL-to-GDSII flow.
+
+**High-Quality Routing:**
+
+The tool focuses on generating high-quality routing solutions that minimize wire length, reduce congestion, and respect timing and power constraints.
+It can handle complex designs with a large number of nets and multiple metal layers.
+Scalability:
+
+TritonRoute is designed to be scalable, handling both small and large designs efficiently. It leverages modern algorithms to manage the complexity of routing in advanced technology nodes.
+
+**Customization and Flexibility:**
+
+Being open-source, TritonRoute allows for extensive customization. Users can modify the tool to suit specific design requirements or integrate it with other tools in their design flow.
+The tool can be adapted for different technology nodes and design styles.
+
+**Part of the Triton Suite:**
+
+TritonRoute works in conjunction with other tools in the Triton suite, such as TritonCTS (Clock Tree Synthesis) and TritonPlace (Placement), providing a comprehensive solution for physical design.
+
+**Community and Support:**
+
+As an open-source project, TritonRoute benefits from community contributions and ongoing development. It is actively maintained by researchers and contributors in the EDA community.
+
+![Screenshot from 2024-09-04 01-07-12](https://github.com/user-attachments/assets/c6d657d9-fb20-47cd-987f-bf5396563fe1)
+![Screenshot from 2024-09-04 01-07-40](https://github.com/user-attachments/assets/ae3d8a68-aa5c-49ec-bbee-c1bb00420a06)
+![Screenshot from 2024-09-04 01-08-24](https://github.com/user-attachments/assets/3bb0926d-fd52-4ebe-b417-95f9ccbbc4a1)
 
