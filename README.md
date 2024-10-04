@@ -777,6 +777,8 @@ file:///home/vsduser/Pictures/Screenshot%20from%202024-10-03%2006-18-25.png![ima
 
 
 **CTS run**
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-11-54.png![image](https://github.com/user-attachments/assets/902ba754-1125-43ae-b273-9b768736814d)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-15-54.png![image](https://github.com/user-attachments/assets/b6144be9-066e-40bd-a6de-ff152ab1052b)
 
 
 
@@ -1039,6 +1041,25 @@ TritonRoute works in conjunction with other tools in the Triton suite, such as T
 As an open-source project, TritonRoute benefits from community contributions and ongoing development. It is actively maintained by researchers and contributors in the EDA community.
 
 ![Screenshot from 2024-09-04 01-07-12](https://github.com/user-attachments/assets/c6d657d9-fb20-47cd-987f-bf5396563fe1)
-![Screenshot from 2024-09-04 01-07-40](https://github.com/user-attachments/assets/ae3d8a68-aa5c-49ec-bbee-c1bb00420a06)
+![Screenshot from 2024-09-04 01-07-40](https://github.com/user-attachments/assets/ae3d8a68-aa5c-49ec-bbee-c1bb00420a06)``
 ![Screenshot from 2024-09-04 01-08-24](https://github.com/user-attachments/assets/3bb0926d-fd52-4ebe-b417-95f9ccbbc4a1)
+
+
+### 6-Labs practise
+
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-17-21.png![image](https://github.com/user-attachments/assets/8d46249b-9bfb-4f9a-93cd-dd40616fa19e)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-17-42.png![image](https://github.com/user-attachments/assets/8cf62002-0434-43af-a57a-11e457cf8080)
+
+
+```bash
+run_routing
+
+```
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-19-45.png![image](https://github.com/user-attachments/assets/ffc6d267-855f-4b5f-a11b-c596d707a519)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-43-42.png![image](https://github.com/user-attachments/assets/ffd986de-fca2-4ab6-b837-49bb8a4c708d)
+file:///home/vsduser/Pictures/Screenshot%20from%202024-10-04%2019-44-50.png![image](https://github.com/user-attachments/assets/666e9614-80ce-4520-a08f-11bf67fd9982)
+
+
+
+
 
